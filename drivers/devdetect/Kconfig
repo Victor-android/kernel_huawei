@@ -1,0 +1,16 @@
+#/* < DTS2011052606009 jiaxianghong 20110527 begin */
+#/* <DTS2011032104626 shenjinming 20110321 begin */
+
+#
+# Near Field Communication (NFC) devices
+#
+
+config HUAWEI_HW_DEV_DCT
+	default y
+	bool "HUAWEI DEVICE DETECT"
+	help
+		Say yes if you want i2c device detect driver.
+		This is for i2c connected version. If unsure, say N here.
+
+#/* <DTS2011032104626 shenjinming 20110321 end> */
+#/* < DTS2011052606009 jiaxianghong 20110527 end */

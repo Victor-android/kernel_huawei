@@ -1,0 +1,34 @@
+
+source "drivers/video/msm/vidc/Kconfig"
+
+config FB_MSM
+	tristate
+	depends on FB && ARCH_MSM
+	select FB_CFB_FILLRECT
+	select FB_CFB_COPYAREA
+	select FB_CFB_IMAGEBLIT
+	default y
+
+config FB_MSM_LCDC
+	bool "Support for integrated LCD controller in qsd8x50"
+	depends on FB_MSM && MSM_MDP31
+	default y
+	
+#/*< DTS2011072500979 jiaoshuangwei 20110725 begin */
+#/* add the code for dynamic gamma function */
+config FB_DYNAMIC_GAMMA
+	bool "Support for DYNAMIC_GAMMA fuction of glory"
+	depends on FB_MSM
+#/*< DTS2011081601583 pengyu 20110816 begin */
+#/* change default state to 'n', move this config to hw7x30_defconfig */
+	default n
+#/* DTS2011081601583 pengyu 20110816 end >*/
+#/* DTS2011072500979 jiaoshuangwei 20110725 end >*/
+
+#/*< DTS2011081800466 pengyu 20110818 begin */
+#/* Add code for automatic CABC function */
+config FB_AUTO_CABC
+	bool "Support for AUTO_CABC fuction"
+	depends on FB_MSM
+	default n
+#/* DTS2011081800466 pengyu 20110818 end >*/

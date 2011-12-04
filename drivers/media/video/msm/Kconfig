@@ -1,0 +1,293 @@
+config MSM_CAMERA_V4L2
+        bool "MSM Camera V4L2 Interface"
+        depends on MSM_CAMERA
+        default n
+        ---help---
+          This flag enables V4L2 interface of MSM
+          camera driver. If enabled, application interacts
+          with /dev/video0 through V4L2 APIs. Otherwise,
+          native APIs are used through /dev/config0, /dev/frame0,
+          and /dev/control0.
+
+comment "Camera Sensor Selection"
+config MT9T013
+	bool "Sensor mt9t013 (BAYER 3M)"
+	depends on MSM_CAMERA && !ARCH_MSM8X60 && !MSM_CAMERA_V4L2
+	default y
+	---help---
+	  MICRON 3M Bayer Sensor with AutoFocus
+
+config MT9D112
+	bool "Sensor mt9d112 (YUV 2M)"
+	depends on MSM_CAMERA && !ARCH_MSM8X60 && !MSM_CAMERA_V4L2
+	default y
+	---help---
+	  MICRON 2M YUV Sensor
+	    
+	  
+#/*<BU5D09497  lijuan 00152865  20100514 begin*/
+config  HUAWEI_CAMERA
+	bool "Select huawei camera"
+	depends on MSM_CAMERA
+	depends on HUAWEI_KERNEL
+	default y
+	---help---
+	  Select huawei camera
+#/* BU5D09497  lijuan 00152865  20100514 end> */
+
+#/*< DTS2011051400258   songxiaoming 20110514 begin */
+config HUAWEI_SENSOR_HI701
+	bool "Sensor Hynix (YUV 30W)"
+	depends on HUAWEI_CAMERA
+	default y
+	---help---
+	  Hynix 30w YUV Sensor
+#/* DTS2011051400258   songxiaoming 20110514 end > */
+
+#/*<  DTS2011101000840   yuguangcai 20111010 begin */
+config HUAWEI_SENSOR_S5K5CA
+	bool "Sensor s5k5ca (YUV 3M)"
+	depends on HUAWEI_CAMERA
+	default y
+	---help---
+	  SUNNY 3M YUV Sensor
+#/* DTS2011101000840   yuguangcai 20111010 end > */
+#/*< DTS2011102805854 yuguangcai 20111031 begin */
+config HUAWEI_SENSOR_MT9T113
+	bool "Sensor mt9t113 (YUV 3M)"
+	depends on HUAWEI_CAMERA
+	default n
+	---help---
+	  Aptina 3M YUV Sensor
+#/* DTS2011102805854 yuguangcai 20111031 end > */
+#/* < DTS2011081301650 liwei 20110813 begin */
+config HUAWEI_SENSOR_OV7690
+	bool "Sensor ov7690 (YUV 30K)"
+	depends on HUAWEI_CAMERA
+	default y
+	---help---
+	  MICRON 30k YUV Sensor
+#/* DTS2011081301650 liwei 20110813 end > */
+
+#/*<BU5D10275  liyuping 00166065 20100529 begin*/
+
+#/*< DTS2011072600848   songxiaoming 20110726 begin */
+config HUAWEI_SENSOR_OV7736
+	bool "Sensor ov7736 (YUV 30W)"
+	depends on HUAWEI_CAMERA
+	default y
+	---help---
+	  MICRON 30W YUV Sensor
+#/* DTS2011072600848   songxiaoming 20110726 end > */
+	  
+config HUAWEI_SENSOR_HIMAX0356
+	bool "Sensor himax (YUV 30W)"
+	depends on HUAWEI_CAMERA
+	default y
+	---help---
+	  HIMAX 30w YUV Sensor
+#/* BU5D10275  liyuping 00166065 20100529 end> */
+
+#/*<DTS2011042704563 penghai 20110427 begin*/
+config HUAWEI_SENSOR_MT9D113
+	bool "Sensor Aptina (YUV 200W)"
+	depends on HUAWEI_CAMERA
+	default y
+	---help---
+	  Aptina 200w YUV Sensor
+#/*DTS2011042704563 penghai 20110427 end>*/
+
+#/* < DTS2011061801881 zhangyu 20110620 BEGIN */
+config HUAWEI_SENSOR_MT9V114
+	bool "Sensor Aptina (YUV 30W)"
+	depends on HUAWEI_CAMERA
+	default y
+	---help---
+	  Aptina 30w YUV Sensor
+	  
+#/* DTS2011061801881 zhangyu 20110620 END > */ 
+
+#/* < DTS2011100802746 zhangyu 20111010 begin */
+config HUAWEI_SENSOR_S5K4E1GX
+	bool "Sensor s5k4e1gx (BAYER 5M)"
+	depends on HUAWEI_CAMERA
+	default n
+	---help---
+	  MICRON 5M Bayer Sensor with AutoFocus
+
+config HUAWEI_SENSOR_S5K4E1GX_P
+	bool "Sensor s5k4e1gx (BAYER 5M)"
+	depends on HUAWEI_CAMERA
+	default n
+	---help---
+	  MICRON 5M Bayer Sensor with AutoFocus
+	  
+#/* < DTS2011090701903 zhangyu 20110907 begin */
+config HUAWEI_SENSOR_MT9P017
+	bool "Sensor mt9p017 (BAYER 5M)"
+	depends on HUAWEI_CAMERA
+	default n
+	---help---
+	  MICRON 5M Bayer Sensor with AutoFocus
+#/* DTS2011090701903 zhangyu 20110907 end > */ 
+#/* DTS2011100802746 zhangyu 20111010 end > */ 
+	  
+#/*<BU5D09497  lijuan 00152865  20100514 begin*/	  
+config HUAWEI_SENSOR_OV5647_SUNNY
+	bool "Sensor ov5647_sunny (BAYER 5M)"
+	depends on HUAWEI_CAMERA
+	default y
+	---help---
+	  MICRON 5M Bayer Sensor with AutoFocus
+#/* BU5D09497  lijuan 00152865  20100514 end> */
+#/* < DTS2010092501047 luojianhong 201000926 begin*/	  
+config HUAWEI_FEATURE_RIGHT_TPA2028D1_AMPLIFIER
+	tristate "right tpa2028d1 amplifier"
+	depends on HUAWEI_KERNEL
+	default y
+	---help---
+	  tpa2028d1 amplifier used for audio.
+#/*  DTS2010092501047 luojianhong 201000926 end > */
+config IMX074
+	bool "Sensor IMX074 (BAYER 13.5M)"
+	depends on MSM_CAMERA && ARCH_MSM8X60 && !MSM_CAMERA_V4L2
+	default y
+	---help---
+	SONY 13.5 MP Bayer Sensor
+config WEBCAM_OV7692
+	bool "Sensor OV7692 (VGA YUV)"
+	depends on MSM_CAMERA && ARCH_MSM8X60 && !MSM_CAMERA_V4L2
+	default y
+	---help---
+	  Omni Vision VGA YUV Sensor.
+#/* < DTS2011081301650 liwei 20110813 begin */
+config WEBCAM_OV9726
+	bool "Sensor OV9726 (VGA Bayer)"
+	depends on MSM_CAMERA && (ARCH_MSM8X60 || ARCH_MSM7X30) && !MSM_CAMERA_V4L2
+	default n
+	---help---
+	  Omni Vision VGA Bayer Sensor.
+#/* DTS2011081301650 liwei 20110813 end > */
+#	This Senosr is used as a webcam.
+#	This uses the CSI interface.
+#	Need to enable CSI1 clks for this sensor.
+config VX6953
+	bool "Sensor VX6953 (BAYER 5M)"
+	depends on MSM_CAMERA && ARCH_MSM7X30
+	default y
+	---help---
+	STM 5M Bayer Sensor with EDOF
+config SN12M0PZ
+	bool "Sensor sn12m0pz (Bayer 12 MP)"
+	depends on MSM_CAMERA && ARCH_MSM7X30 && !MSM_CAMERA_V4L2
+	default y
+	---help---
+	  Sony 12 MP Bayer Sensor
+config MT9P012
+	bool "Sensor mt9p012 (BAYER 5M)"
+	depends on MSM_CAMERA && !ARCH_MSM8X60 && !MSM_CAMERA_V4L2
+	default y
+	---help---
+	  MICRON 5M Bayer Sensor with Autofocus
+
+choice
+	prompt "AF module"
+	depends on MT9P012 && !ARCH_MSM8X60 && !MSM_CAMERA_V4L2
+	default MSM_CAMERA_AF_FOXCONN
+
+config MSM_CAMERA_AF_FOXCONN
+	bool "FOXCONN Module"
+	help
+	  This driver supports FOXCONN AF module for 5M Bayer sensor
+
+config MSM_CAMERA_AF_BAM
+	bool "BAM Module"
+	help
+	  This driver supports BAM AF module for 5M Bayer sensor
+
+endchoice
+
+config MT9P012_KM
+	bool "Sensor mt9p012 KM module (BAYER 5M)"
+	depends on MSM_CAMERA && !ARCH_MSM8X60 && !MSM_CAMERA_V4L2
+	default y
+	---help---
+	  MICRON 5M Bayer Sensor KM modules with Autofocus
+
+config MT9E013
+	bool "Sensor mt9e013 module (BAYER 8M)"
+	depends on MSM_CAMERA && ARCH_MSM7X30 && !MSM_CAMERA_V4L2
+	default y
+	---help---
+	  Aptina 8M Bayer Sensor modules with Autofocus
+
+#/*<DTS2011042704563 penghai 20110427 begin*/
+config HUAWEI_SENSOR_MT9E013
+	bool "Sensor mt9e013 module (BAYER 8M)"
+	depends on HUAWEI_CAMERA
+	default y
+	---help---
+	  Aptina 8M Bayer Sensor modules with Autofocus
+#/*DTS2011042704563 penghai 20110427 end>*/
+
+config S5K3E2FX
+	bool "Sensor s5k3e2fx (Samsung 5M)"
+	depends on MSM_CAMERA && !ARCH_MSM8X60 && !MSM_CAMERA_V4L2
+	default y
+	---help---
+	  Samsung 5M with Autofocus
+
+config VB6801
+	bool "Sensor vb6801"
+	depends on MSM_CAMERA && !ARCH_MSM8X60 && !MSM_CAMERA_V4L2
+	---help---
+	  5M with flash
+
+config MSM_CAMERA_FLASH
+	bool "Qualcomm MSM camera flash support"
+	depends on MSM_CAMERA
+	default y
+	---help---
+	  Enable support for LED flash for msm camera
+
+#/*< DTS2011091402372   yuguangcai 20110914 begin */
+config HUAWEI_FEATURE_TPS61310
+	tristate "TPS61310"
+	depends on HUAWEI_KERNEL
+	default n
+	help
+	  tps61310 LED camera flash and video light
+#/* DTS2011091402372   yuguangcai 20110914 end > */
+#/* < DTS2011072705129 xiangxu 20110728 begin */
+config HW_TORCH
+	bool "HUAWEI torch support"
+	depends on MSM_CAMERA_FLASH
+	default n
+	---help---
+	  Enable support for LED flash for torch
+#/* DTS2011072705129 xiangxu 20110728 end > */
+config MSM_GEMINI
+	tristate "Qualcomm MSM Gemini Jpeg Engine support"
+	depends on MSM_CAMERA && (ARCH_MSM7X30 || ARCH_MSM8X60)
+	default M
+	---help---
+	  Enable support for Gemini Jpeg Engine
+
+config MSM_VPE
+	tristate "Qualcomm MSM Video Pre-processing Engine support"
+	depends on MSM_CAMERA && (ARCH_MSM7X30 || ARCH_MSM8X60)
+	default y
+	---help---
+	  Enable support for Video Pre-processing Engine
+
+config QUP_EXCLUSIVE_TO_CAMERA
+	bool "QUP exclusive to camera"
+	depends on MSM_CAMERA
+	default y
+	---help---
+	  This flag enabled states that QUP
+	  is exclusive to camera. In case this
+	  is disabled, the lvs1 voltage is enabled
+	  by QUP in the board file as QUP is used by
+	  applications other than camera.
+
