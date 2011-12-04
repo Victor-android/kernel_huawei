@@ -191,9 +191,9 @@ static void AKECS_Report_Value(short *rbuf)
 	
 	/* Report magnetic sensor information */
 	if (atomic_read(&mv_flag)) {
-		input_report_abs(data->input_dev, ABS_HAT0X, rbuf[3]);
+		input_report_abs(data->input_dev, ABS_HAT0X, -rbuf[3]);
 		input_report_abs(data->input_dev, ABS_HAT0Y, rbuf[4]);
-		input_report_abs(data->input_dev, ABS_BRAKE, rbuf[5]);
+		input_report_abs(data->input_dev, ABS_BRAKE, -rbuf[5]);
 	}
 	
 	input_sync(data->input_dev);
@@ -305,6 +305,8 @@ st303_aot_ioctl(struct inode *inode, struct file *file,
 	case ECS_IOCTL_APP_GET_DELAY:
 		flag = st303d_delay;
 		break;
+	case ECS_IOCTL_APP_GET_DEVID:
+		break;
 	default:
 		return -ENOTTY;
 	}
@@ -317,6 +319,18 @@ st303_aot_ioctl(struct inode *inode, struct file *file,
 	case ECS_IOCTL_APP_GET_DELAY:
 		if (copy_to_user(argp, &flag, sizeof(flag)))
 			return -EFAULT;
+		break;
+	case ECS_IOCTL_APP_GET_DEVID:
+		if((st303_dev_id == DEV_ID_303DLH) )
+		{
+			if (copy_to_user(argp, ST303DLH_I2C_NAME, strlen(ST303DLH_I2C_NAME)+1))
+				return -EFAULT;
+		}
+		else if(st303_dev_id == DEV_ID_303DLM)
+		{
+			if (copy_to_user(argp, ST303DLM_I2C_NAME, strlen(ST303DLM_I2C_NAME)+1))
+				return -EFAULT;
+		}
 		break;
 	default:
 		break;
@@ -490,8 +504,8 @@ static int st303_init_client(struct i2c_client *client)
 	init_waitqueue_head(&open_wq);
 
 	/* As default, report all information */
-	atomic_set(&m_flag, 1);
-	atomic_set(&mv_flag, 1);
+	atomic_set(&m_flag, 0);
+	atomic_set(&mv_flag, 0);
 
 	return 0;
 }

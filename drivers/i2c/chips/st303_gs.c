@@ -129,6 +129,31 @@ static void gs_early_suspend(struct early_suspend *h);
 static void gs_late_resume(struct early_suspend *h);
 #endif
 
+static inline int reg_read(struct gs_data *gs , int reg);
+static int st303_debug_mask;
+module_param_named(st303_debug, st303_debug_mask, int, S_IRUGO | S_IWUSR | S_IWGRP);
+
+#define st303_DBG(x...) do {\
+    if (st303_debug_mask) \
+        printk(KERN_DEBUG x);\
+    } while (0)
+#define st303_PRINT_PER_TIMES 100
+unsigned int st303_times = 0;
+
+void st303_print_debug(int start_reg,int end_reg)
+{
+	int reg, ret;
+
+	for(reg = start_reg ; reg <= end_reg ; reg ++)
+	{
+		/* read reg value */
+		ret = reg_read(this_gs_data,reg);
+		/* print reg info */
+		st303_DBG("st303 reg 0x%x values 0x%x\n",reg,ret);
+	}
+	
+}
+
 /**************************************************************************************/
 static inline int reg_read(struct gs_data *gs , int reg)
 {
@@ -304,6 +329,7 @@ static void gs_work_func(struct work_struct *work)
 	signed short x = 0;
 	signed short y = 0;
 	signed short z = 0;
+	signed short tmp = 0;
 	u8 udata[2]={0};
 
 	
@@ -337,7 +363,7 @@ static void gs_work_func(struct work_struct *work)
 		GS303_DEBUG(KERN_ERR "A_z h 0x%x \n", udata[1]);
 		z = ((udata[1])<<4)|udata[0]>>4;
 		
-		GS303_DEBUG(KERN_ERR "A  x :0x%x y :0x%x z :0x%x \n", x,y,z);
+		st303_DBG("Gs_st303:A  x : %d y : %d z : %d \n", x,y,z);
 	 
 		if(x&0x800)/*负值*/
 		{
@@ -354,9 +380,13 @@ static void gs_work_func(struct work_struct *work)
 			z -= 4096; 		/*负数按照补码计算 */   
 		}
 
+		tmp = -x;
+		x = -y;
+		y = tmp;
+
 		memset((void*)st_sensor_data, 0, sizeof(st_sensor_data));
-		st_sensor_data[0]= y;
-		st_sensor_data[1]= x;	
+		st_sensor_data[0]= -x;
+		st_sensor_data[1]= -y;	
 		st_sensor_data[2]= z;
 		
 		/*(Decimal value/ 4096) * 4.0 g,For (0g ~+2.0g)*/	
@@ -373,6 +403,18 @@ static void gs_work_func(struct work_struct *work)
 		input_sync(gs->input_dev);
 	}
 	
+	st303_DBG("Gs_st303:A  x : %d y : %d z : %d \n", x,y,z);
+	if(st303_debug_mask)
+	{
+		/* print reg info in such times */
+		if(!(++st303_times%st303_PRINT_PER_TIMES))
+		{
+			/* count return to 0 */
+			st303_times = 0;
+			st303_print_debug(GS_ST_REG_CTRL1,GS_ST_OUT_Z_H_A);
+			st303_print_debug(GS_ST_REG_FF_WU_CFG_1,GS_ST_REG_CLICK_WINDOW);
+		}
+	}
 	if (gs->use_irq)
 		enable_irq(gs->client->irq);
 	else

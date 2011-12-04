@@ -88,6 +88,9 @@ static int proximity_device_minor = 0;
 static struct wake_lock proximity_wake_lock;
 static atomic_t l_flag;
 static atomic_t p_flag;
+/*get value of proximity and light*/
+static int proximity_data_value = 0;
+static int light_data_value = 0;
 
 #define LSENSOR_MAX_LEVEL 7
 static uint16_t lsensor_adc_table[LSENSOR_MAX_LEVEL] = {
@@ -95,9 +98,9 @@ static uint16_t lsensor_adc_table[LSENSOR_MAX_LEVEL] = {
 	5, 20, 32 , 64, 256, 640, 1024
 };
 
-static uint16_t lsensor_lux_table[LSENSOR_MAX_LEVEL] = {
+/*static uint16_t lsensor_lux_table[LSENSOR_MAX_LEVEL] = {
 	10, 225, 320, 640, 1280, 2600, 10240
-};
+};*/
 
 #define 	TOTAL_RANGE_NUM 	2	/* aps-12d has 4 types of range,but we use two range */
 #define 	MAX_ADC_OUTPUT  	4096	/* adc max value */
@@ -110,13 +113,6 @@ static int last_event = -1;
 
 static unsigned int low_threshold_value[TOTAL_RANGE_NUM] =  {400,10};
 static unsigned int high_threshold_value[TOTAL_RANGE_NUM] = {450,12};
-/* add the values by product */
-static unsigned int low_threshold_value_U8820[TOTAL_RANGE_NUM] =  {800,80};
-static unsigned int high_threshold_value_U8820[TOTAL_RANGE_NUM] = {900,90};
-static unsigned int low_threshold_value_U8800_51[TOTAL_RANGE_NUM] =  {350,12};
-static unsigned int high_threshold_value_U8800_51[TOTAL_RANGE_NUM] = {400,18};
-static unsigned int low_threshold_value_U8800_pro[TOTAL_RANGE_NUM] =  {300,8};
-static unsigned int high_threshold_value_U8800_pro[TOTAL_RANGE_NUM] = {340,15};
 static unsigned int err_threshold_value[TOTAL_RANGE_NUM] = {4096,50};
 
 static unsigned int range_reg_value[TOTAL_RANGE_NUM] = { APS_12D_RANGE_SEL_ALS_1000, \
@@ -276,7 +272,14 @@ aps_12d_ioctl(struct inode *inode, struct file *file, unsigned int cmd,
 		case ECS_IOCTL_APP_GET_DELAY:
 			flag = aps_12d_delay;
 			break;
-			
+		/*get value of proximity and light*/
+		case ECS_IOCTL_APP_GET_PDATA_VALVE:
+			flag = proximity_data_value;
+       		break;
+        
+		case ECS_IOCTL_APP_GET_LDATA_VALVE:
+       		flag = light_data_value;
+       		break;
 		default:
 			break;
 	}
@@ -298,6 +301,16 @@ aps_12d_ioctl(struct inode *inode, struct file *file, unsigned int cmd,
 			return -EFAULT;
 			
 			break;
+		/*get value of proximity and light*/
+		case ECS_IOCTL_APP_GET_PDATA_VALVE:
+       		if (copy_to_user(argp, &flag, sizeof(flag)))
+           		return -EFAULT;
+       		 break;
+        
+		case ECS_IOCTL_APP_GET_LDATA_VALVE:
+      		if (copy_to_user(argp, &flag, sizeof(flag)))
+          		return -EFAULT;
+       		 break;
 			
 		default:
 			break;
@@ -357,26 +370,8 @@ static void aps_12d_work_func(struct work_struct *work)
 						APS_12D_FREQ_SEL_DC << 4 | \
 						APS_12D_RES_SEL_12 << 2 | \
 						range_reg_value[range_index]));
-			if (machine_is_msm7x30_u8820())
-			{
-				high_threshold = high_threshold_value_U8820[range_index];
-				low_threshold = low_threshold_value_U8820[range_index];
-			}
-			else if (machine_is_msm7x30_u8800_51())
-			{
-				high_threshold = high_threshold_value_U8800_51[range_index];
-				low_threshold = low_threshold_value_U8800_51[range_index];
-			}
-			else if(machine_is_msm8255_u8800_pro())
-			{
-				high_threshold = high_threshold_value_U8800_pro[range_index];
-				low_threshold = low_threshold_value_U8800_pro[range_index];
-			}
-			else
-			{
-				high_threshold = high_threshold_value[range_index];
-				low_threshold = low_threshold_value[range_index];
-			}
+			high_threshold = high_threshold_value[range_index];
+			low_threshold = low_threshold_value[range_index];
 		}
 		else
 		{
@@ -462,6 +457,14 @@ static void aps_12d_work_func(struct work_struct *work)
 		    PROXIMITY_DEBUG("get wrong ps value, ps_count=%d \n", ps_count);
 		    ps_count = 0;
 	    }
+		/*get value of proximity and light*/
+	     proximity_data_value = ps_count;
+		if (range_index == 1){     
+		     light_data_value = ir_count*RANG_VALUE;
+		}		     
+		else {		     
+		     light_data_value = ir_count;
+		}		     
 		if ((ps_count - ir_count) > err_threshold_value[range_index] || (ps_count - ir_count) < 0 )
 			flag = -1;
 	    else if( (ps_count - ir_count) > high_threshold )
@@ -546,8 +549,7 @@ static void aps_12d_work_func(struct work_struct *work)
 		}
 		else
 		{
-			PROXIMITY_DEBUG("report lux value=%d \n", lsensor_lux_table[als_level]);
-			input_report_abs(aps->input_dev, ABS_LIGHT, lsensor_lux_table[als_level]);
+			input_report_abs(aps->input_dev, ABS_LIGHT, als_level);
 			input_sync(aps->input_dev);
 		}
 	}
@@ -632,80 +634,40 @@ static int aps_12d_probe(
 	{
 		goto err_detect_failed;
 	}
-	/* modify the value of  err_threshold_value[1] by produce*/
-	if (machine_is_msm7x30_u8820())
-	{
-		err_threshold_value[1] =  240; 
-	}
-	else if (machine_is_msm7x30_u8800_51())
-	{
-		err_threshold_value[1] =  60; 
-	}
-	else if(machine_is_msm8255_u8800_pro())
-	{
-		err_threshold_value[1] =  45; 
-	}
-	else
-	{
-		err_threshold_value[1] =  50; 
-	}
 	range_index = 0;
 
 	for(i = 0; i < TOTAL_RANGE_NUM; i++)
 	{
 		/* NOTE: do NOT use the last one */
-		/* up_range_value[0]= 3596 */
-		up_range_value[i] = MAX_ADC_OUTPUT  - RANGE_FIX ; 
+		up_range_value[i] = MAX_ADC_OUTPUT - high_threshold_value[i] - RANGE_FIX; 
 	}
 
 	down_range_value[0] = 0;
 	for(i = 1; i < TOTAL_RANGE_NUM; i++)
 	{
-		if (machine_is_msm7x30_u8820())
-		{
-			/* down_range_value[1]= 44 */
-			down_range_value[i] = (MAX_ADC_OUTPUT - high_threshold_value_U8820[i-1] - (MAX_ADC_OUTPUT / ADJUST_GATE)) / 4 - 550; 
-		}
-		else if (machine_is_msm7x30_u8800_51())
-		{
-			/* down_range_value[1]= 44 */
-			down_range_value[i] = (MAX_ADC_OUTPUT - high_threshold_value_U8800_51[i-1] - (MAX_ADC_OUTPUT / ADJUST_GATE)) / 4 - 675; 
-		}
-		else if(machine_is_msm8255_u8800_pro())
-		{
-			/* down_range_value[1]= 44 */
-			down_range_value[i] = (MAX_ADC_OUTPUT - high_threshold_value_U8800_pro[i-1] - (MAX_ADC_OUTPUT / ADJUST_GATE)) / 4 - 690; 
-		}
-		else
-		{
-			/* NOTE: do not use the first one */
-			down_range_value[i] = (MAX_ADC_OUTPUT - high_threshold_value[i-1] - (MAX_ADC_OUTPUT / ADJUST_GATE)) / 4 - 660; 
-		}
+		/* NOTE: do not use the first one */
+		down_range_value[i] = (MAX_ADC_OUTPUT - high_threshold_value[i-1] - (MAX_ADC_OUTPUT / ADJUST_GATE)) / 4; 
 	}
 
-	if (sensor_dev == NULL) {
-		aps->input_dev = input_allocate_device();
-		if (aps->input_dev == NULL) {
-			ret = -ENOMEM;
-			PROXIMITY_DEBUG(KERN_ERR "aps_12d_probe: Failed to allocate input device\n");
-			goto err_input_dev_alloc_failed;
-		}
-		aps->input_dev->name = "sensors";
-		
-		aps->input_dev->id.bustype = BUS_I2C;
-		
-		input_set_drvdata(aps->input_dev, aps);
-		
-		ret = input_register_device(aps->input_dev);
-		if (ret) {
-			printk(KERN_ERR "aps_probe: Unable to register %s input device\n", aps->input_dev->name);
-			goto err_input_register_device_failed;
-		}
-		sensor_dev = aps->input_dev;
-	} else {
-		aps->input_dev = sensor_dev;
+	aps->input_dev = input_allocate_device();
+	if (aps->input_dev == NULL) {
+		ret = -ENOMEM;
+		PROXIMITY_DEBUG(KERN_ERR "aps_12d_probe: Failed to allocate input device\n");
+		goto err_input_dev_alloc_failed;
+	}
+	aps->input_dev->name = "sensors_aps";
+	
+	aps->input_dev->id.bustype = BUS_I2C;
+	
+	input_set_drvdata(aps->input_dev, aps);
+	
+	ret = input_register_device(aps->input_dev);
+	if (ret) {
+		printk(KERN_ERR "aps_probe: Unable to register %s input device\n", aps->input_dev->name);
+		goto err_input_register_device_failed;
 	}
 
+	
 	set_bit(EV_ABS, aps->input_dev->evbit);
 	input_set_abs_params(aps->input_dev, ABS_LIGHT, 0, 10240, 0, 0);
 	input_set_abs_params(aps->input_dev, ABS_DISTANCE, 0, 1, 0, 0);
@@ -748,7 +710,6 @@ static int aps_12d_probe(
 	}
 	
 	this_aps_data =aps;
-
     #ifdef CONFIG_HUAWEI_HW_DEV_DCT
     /* detect current device successful, set the flag as present */
     set_hw_dev_flag(DEV_I2C_APS);
@@ -772,8 +733,7 @@ err_alloc_data_failed:
 err_check_functionality_failed:
 	if(NULL != vreg_gp4)
 	{
-        ret = vreg_disable(vreg_gp4);
-	 	PROXIMITY_DEBUG(KERN_ERR "the power is off: gp4 = %d \n ", ret);	
+        vreg_disable(vreg_gp4);
 	}
 	return ret;
   
