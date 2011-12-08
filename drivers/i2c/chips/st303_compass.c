@@ -191,9 +191,9 @@ static void AKECS_Report_Value(short *rbuf)
 	
 	/* Report magnetic sensor information */
 	if (atomic_read(&mv_flag)) {
-		input_report_abs(data->input_dev, ABS_HAT0X, rbuf[3]);
+		input_report_abs(data->input_dev, ABS_HAT0X, -rbuf[3]);
 		input_report_abs(data->input_dev, ABS_HAT0Y, rbuf[4]);
-		input_report_abs(data->input_dev, ABS_BRAKE, rbuf[5]);
+		input_report_abs(data->input_dev, ABS_BRAKE, -rbuf[5]);
 	}
 	
 	input_sync(data->input_dev);
@@ -490,8 +490,8 @@ static int st303_init_client(struct i2c_client *client)
 	init_waitqueue_head(&open_wq);
 
 	/* As default, report all information */
-	atomic_set(&m_flag, 1);
-	atomic_set(&mv_flag, 1);
+	atomic_set(&m_flag, 0);
+	atomic_set(&mv_flag, 0);
 
 	return 0;
 }
