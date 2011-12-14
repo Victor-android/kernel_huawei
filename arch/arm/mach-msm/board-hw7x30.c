@@ -217,7 +217,7 @@ usb_pid_stru *curr_usb_pid_ptr = &usb_pid_array[0];
 
 /* DTS2011101201153  hujun 20111030 end > */
 /*use pimc gpio 36 to enable the powre of SD*/
-#ifdef CONFIG_HUAWEI_KERNEL
+#ifndef CONFIG_HUAWEI_KERNEL
 #define PMIC_GPIO_SDC4_EN_N	35  /* PMIC GPIO Number 36 */
 #else
 #define PMIC_GPIO_SDC4_EN_N	17  /* PMIC GPIO Number 18 */
@@ -272,7 +272,7 @@ usb_pid_stru *curr_usb_pid_ptr = &usb_pid_array[0];
 
 /*< DTS2011012004291 xuhui 20110120 begin */
 /*config res for  BCM4329 bt-wifi-fm in one */
-#ifdef CONFIG_HUAWEI_KERNEL
+#ifndef CONFIG_HUAWEI_KERNEL
 
 /*< DTS2011021001070 xuhui 20110210 begin */
 // 50 mSeconds for BCM4329 stable
@@ -1360,7 +1360,8 @@ static int get_phone_version(struct tp_resolution_conversion *tp_resolution_type
     /*<DTS2011051601005 fengwei 20110516 begin*/
     if (machine_is_msm7x30_u8820()
 	  ||machine_is_msm7x30_u8800_51()
-	  ||machine_is_msm8255_u8800_pro())
+	  ||machine_is_msm8255_u8800_pro()
+          ||machine_is_msm7x30_u8800())
     {
         tp_resolution_type->lcd_x = LCD_X_WVGA;
         tp_resolution_type->lcd_y = LCD_Y_WVGA;   
@@ -3554,7 +3555,7 @@ static void msm_marimba_shutdown_power(void)
 };
 /* < DTS2011030705328 sihongfang 20110311 begin */
 /*bcm4329 do not use this function*/
-#ifndef CONFIG_HUAWEI_KERNEL
+#ifdef CONFIG_HUAWEI_KERNEL
 /* DTS2011030705328 sihongfang 20110311 end > */
 static int bahama_present(void)
 {
@@ -4014,7 +4015,7 @@ static struct marimba_platform_data marimba_pdata = {
 	.bahama_core_config = msm_bahama_core_config,
 /* < DTS2011030705328 sihongfang 20110311 begin */
 /*bcm4329 do not use this function*/
-#ifndef CONFIG_HUAWEI_KERNEL
+#ifdef CONFIG_HUAWEI_KERNEL
 	.fm = &marimba_fm_pdata,
 #endif
 /* DTS2011030705328 sihongfang 20110311 end > */
@@ -5809,7 +5810,7 @@ static struct lcdc_platform_data dtv_pdata = {
 
 /* < DTS2011041200623 xuhui 20110412 begin */
 /*disable QC's In Band Sleep mode with BCM4329 bluetooth chip*/
-#ifndef CONFIG_HUAWEI_KERNEL
+#ifdef CONFIG_HUAWEI_KERNEL
 static struct msm_serial_hs_platform_data msm_uart_dm1_pdata = {
        .inject_rx_on_wakeup = 1,
        .rx_to_inject = 0xFD,
@@ -6242,8 +6243,8 @@ static void __init msm_fb_add_devices(void)
 /* DTS2010072202961 hufeng 20100722 end> */
 
 /*< DTS2011012004291 xuhui 20110120 begin */
-//delete QC's bt code
-#ifndef CONFIG_HUAWEI_KERNEL
+//don't delete QC's bt code
+#ifdef CONFIG_HUAWEI_KERNEL
 #if defined(CONFIG_MARIMBA_CORE) && \
    (defined(CONFIG_MSM_BT_POWER) || defined(CONFIG_MSM_BT_POWER_MODULE))
 static struct platform_device msm_bt_power_device = {
@@ -6764,8 +6765,8 @@ static void __init bt_power_init(void)
 #endif
 
 #endif
-/*do all bt ops here:*/
-#ifdef CONFIG_HUAWEI_KERNEL
+/*don't do all bt ops here:*/
+#ifndef CONFIG_HUAWEI_KERNEL
 static struct platform_device msm_bt_power_device = {
     .name = "bt_power",
     .id     = -1
@@ -7280,7 +7281,7 @@ static struct platform_device *devices[] __initdata = {
 	&qup_device_i2c,
 
 /*< DTS2011012004291 xuhui 20110120 begin */
-#ifndef CONFIG_HUAWEI_KERNEL
+#ifdef CONFIG_HUAWEI_KERNEL
 #if defined(CONFIG_MARIMBA_CORE) && \
    (defined(CONFIG_MSM_BT_POWER) || defined(CONFIG_MSM_BT_POWER_MODULE))
 	&msm_bt_power_device,
@@ -8389,8 +8390,7 @@ static struct mmc_platform_data msm7x30_sdc3_data = {
 #ifdef CONFIG_MMC_MSM_SDIO_SUPPORT
 /* < DTS2011022102443 xuke 20110303 begin */
 #ifdef CONFIG_HUAWEI_KERNEL
-	/* disable sdiowakeup_irq  */
-	/*.sdiowakeup_irq = MSM_GPIO_TO_INT(118),*/
+	.sdiowakeup_irq = MSM_GPIO_TO_INT(118),
 #endif
 /* DTS2011022102443 xuke 20110303 end > */
 #endif
@@ -8933,7 +8933,8 @@ static void __init virtualkeys_init(void)
         		   "\n");
     }
     else if ( machine_is_msm7x30_u8800_51()
-		   ||machine_is_msm8255_u8800_pro())
+		   ||machine_is_msm8255_u8800_pro()
+                   ||machine_is_msm7x30_u8800())
     {
         buf_vkey_size = sprintf(buf_virtualkey,
         			__stringify(EV_KEY) ":" __stringify(KEY_BACK)  ":67:850:130:80"
@@ -9951,7 +9952,7 @@ static void __init msm7x30_init(void)
 #endif
 /* < DTS2011041200623 xuhui 20110412 begin */
 /*disable QC's In Band Sleep mode with BCM4329 bluetooth chip*/
-#ifndef CONFIG_HUAWEI_KERNEL
+#ifdef CONFIG_HUAWEI_KERNEL
 	msm_uart_dm1_pdata.wakeup_irq = gpio_to_irq(136);
 	msm_device_uart_dm1.dev.platform_data = &msm_uart_dm1_pdata;
 #endif
@@ -10047,7 +10048,7 @@ static void __init msm7x30_init(void)
 #endif
 /*  DTS2010092501047 luojianhong 201000926 end > */
 /*< DTS2011012004291 xuhui 20110120 begin */
-#ifdef CONFIG_HUAWEI_KERNEL
+#ifndef CONFIG_HUAWEI_KERNEL
         bt_bcm4329_power_init();
 #else
 	bt_power_init();

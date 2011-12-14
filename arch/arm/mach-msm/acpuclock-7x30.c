@@ -104,10 +104,6 @@ static struct pll pll2_tbl[] = {
 	{  79, 0, 1, 0 }, /* 1516 MHz */
 	{  84, 0, 1, 0 }, /* 1612 MHz */
 	{  94, 0, 1, 0 }, /* 1804 MHz */
-	{  100, 0, 1, 0 }, /* 1920 MHz */
-	{  104, 0, 1, 0 }, /* 1997 MHz */
-	{  108, 0, 1, 0 }, /* 2074 MHz */
-	{  110, 0, 1, 0 }, /* 2112 MHz */
 
 };
 
@@ -143,10 +139,6 @@ static struct clkctl_acpu_speed acpu_freq_tbl[] = {
 	{ 1, 1516800, PLL_2, 3, 0, UINT_MAX, 1300, VDD_RAW(1300), &pll2_tbl[7]},
 	{ 1, 1612800, PLL_2, 3, 0, UINT_MAX, 1350, VDD_RAW(1350), &pll2_tbl[8]},
 	{ 1, 1804800, PLL_2, 3, 0, UINT_MAX, 1350, VDD_RAW(1400), &pll2_tbl[9]},
-	{ 1, 1920000, PLL_2, 3, 0, UINT_MAX, 1400, VDD_RAW(1450), &pll2_tbl[10]},
-	{ 1, 1996800, PLL_2, 3, 0, UINT_MAX, 1400, VDD_RAW(1450), &pll2_tbl[11]},
-	{ 1, 2073600, PLL_2, 3, 0, UINT_MAX, 1400, VDD_RAW(1450), &pll2_tbl[12]},
-	{ 1, 2112000, PLL_2, 3, 0, UINT_MAX, 1400, VDD_RAW(1500), &pll2_tbl[13]},
 	{ 0 }
 };
 
