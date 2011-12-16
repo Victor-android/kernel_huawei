@@ -615,7 +615,7 @@ static int __init logger_init(void)
 	int ret;
 	
 /*< DTS2011092603497 mazhenhua user log on/off 20110927 begin */
-#ifdef CONFIG_HUAWEI_KERNEL
+#ifndef CONFIG_HUAWEI_KERNEL
 	struct log_ctl ctl_info;
 	unsigned nv_log_ctl_info = LOG_CTL_INFO_ITEM;
 
