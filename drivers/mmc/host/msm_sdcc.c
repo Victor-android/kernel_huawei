@@ -2388,17 +2388,13 @@ msmsdcc_runtime_suspend(struct device *dev)
 		 * simple become pm usage counter increment operations.
 		 */
 /* < DTS2011022102443 xuke 20110303 begin */
-#ifdef CONFIG_HUAWEI_KERNEL
-		if(SDCC_WIFI_SLOT != host->pdev_id){
-#endif
+
 /* DTS2011022102443 xuke 20110303 end > */
 		pm_runtime_get_noresume(dev);
 		rc = mmc_suspend_host(mmc);
 		pm_runtime_put_noidle(dev);
 /* < DTS2011022102443 xuke 20110303 begin */
-#ifdef CONFIG_HUAWEI_KERNEL
-		}
-#endif
+
 /* DTS2011022102443 xuke 20110303 end > */
 		if (!rc) {
 			/*
@@ -2462,15 +2458,11 @@ msmsdcc_runtime_resume(struct device *dev)
 		spin_unlock_irqrestore(&host->lock, flags);
 
 /* < DTS2011022102443 xuke 20110303 begin */
-#ifdef CONFIG_HUAWEI_KERNEL
-		if(SDCC_WIFI_SLOT != host->pdev_id){
-#endif
+
 /* DTS2011022102443 xuke 20110303 end > */
 		mmc_resume_host(mmc);
 /* < DTS2011022102443 xuke 20110303 begin */
-#ifdef CONFIG_HUAWEI_KERNEL
-		}
-#endif
+
 /* DTS2011022102443 xuke 20110303 end > */
 
 		/*
